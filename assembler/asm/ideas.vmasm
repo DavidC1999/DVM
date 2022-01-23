@@ -1,0 +1,75 @@
+; 64-bit
+; variable amount of memory, theoretical maximum of 2^64 addresses, will most likely crash your computer though
+
+; single-line comments with semicolons
+/*
+    C-style multi-line comments
+*/
+
+;;;;;;;;;;;;;;;;;; copying registers
+mov r0 1     ; r0 <- 1
+mov r0 r1    ; r0 <- r1
+
+;;;;;;;;;;;;;;;;;; loading/storing memory
+ld r0 1  ; r0 <- mem[1]
+ld r0 r1 ; r0 <- mem[r1] 
+
+st r0 1  ; r0 -> mem[1]
+st r0 r1 ; r0 -> mem[r1]
+
+;;;;;;;;;;;;;;;;;; Arithmetic
+add r0 1  ; r0 <- r0 + 1
+add r0 r1 ; r0 <- r0 + r1
+; then also for sub, mul, div, or, nor, and, nand, xor, xnor
+not r1    ; r1 <- ~r1
+
+;;;;;;;;;;;;;;;;;; Labels
+mov r0 0
+my_label:
+    out r0
+    add r0 1
+    cmp r0 10
+    jg break_loop
+    jmp my_label
+break_loop:
+    halt
+
+;;;;;;;;;;;;;;;;;; Conditionals
+; Conditionals set flags register
+; flags:
+; G : greater than
+; GE: greater than or equal
+; L : less than
+; LE: less than or equal
+; E : equal
+cmp r0 0  ; compares r0 to immeadiate 0
+cmp r0 r1 ; compares r0 to r1
+
+;;;;;;;;;;;;;;;;;; output
+; very simple for now,
+; will expand in the future
+out 3  ; print immediate value 3
+out r1 ; prints value of r1
+
+;;;;;;;;;;;;;;;;;; Stack
+push 1  ; stack[sp++] <- 1
+push r0 ; stack[sp++] <- r0
+pop  r0  ; r0 <- stack[--sp]
+
+;;;;;;;;;;;;;;;;;; Function calls (not implemented yet)
+; --stuff--
+mov r0 1
+mov r1 2
+call func_add ; push next addr, unconditional jump
+; --stuff--
+func_add:
+    add r0 r1
+    ret ; pop addr off stack; jump there
+
+;;;;;;;;;;;;;;;;;; 'preprocessor' (not implemented yet)
+@include "my_file.vmasm"
+
+@def MY_CONSTANT 3
+@macro add_three(register):
+    add %register MY_CONSTANT
+@end
