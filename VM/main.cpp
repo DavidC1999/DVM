@@ -10,11 +10,6 @@
 #include "Memory.h"
 #include "instructions.h"
 
-#define FILE_PATH "D:\\Users\\David\\Documents\\programming\\VM\\program.bin"
-
-
-//std::map<uint64_t, uint64_t> mem;
-
 program_t read_program(const char *file_path) {
     std::ifstream file(file_path, std::ios_base::binary);
     if (file.is_open()) {
@@ -48,13 +43,58 @@ void print_reg_state(const std::array<uint64_t, REG_AMT> &regs) {
     std::cout << "------------------" << std::endl;
 }
 
-int main() {
+void print_usage(std::ostream &stream, const std::string &program) {
+    stream << "USAGE: " << program << " <options> [filename]" << std::endl;
+    stream << "OPTIONS:" << std::endl;
+    stream << "    -h|--help                      Shows this message" << std::endl;
+}
+
+struct Options {
+    const char* filepath;
+};
+
+Options parse_command_line_arguments(int argc, const char **argv) {
+    std::string program_name = argv[0];
+
+    Options output {
+        .filepath = "",
+    };
+
+    uint8_t cla_i = 1;
+    while (cla_i < argc) {
+        if (argv[cla_i] == std::string("-h") || argv[cla_i] == std::string("--help")) {
+            print_usage(std::cout, program_name);
+            std::exit(0);
+        }
+
+        if(argv[cla_i][0] == '-') {
+            std::cerr << "ERROR: unknown option: " << argv[cla_i] << std::endl;
+            print_usage(std::cerr, program_name);
+            std::exit(1);
+        }
+
+        output.filepath = argv[cla_i];
+        ++cla_i;
+    }
+
+    if(*output.filepath == '\0') {
+        std::cerr << "ERROR: please provide a file to run" << std::endl;
+        print_usage(std::cerr, program_name);
+        std::exit(1);
+    }
+
+    return output;
+}
+
+int main(int argc, const char **argv) {
+    Options cla = parse_command_line_arguments(argc, argv);
+
     Memory mem;
     uint8_t flags = 0;
     std::array<uint64_t, REG_AMT> regs = {0};
     std::stack<uint64_t> stack;
 
-    program_t program = read_program(FILE_PATH);
+    program_t program = read_program(cla.filepath);
 
     mem.load_program(program);
     mem.print_contents();

@@ -6,8 +6,6 @@
 #include "Tokenizer.h"
 #include "Assembler.h"
 
-#define FILE_PATH "D:\\Users\\David\\Documents\\programming\\VM\\assembler\\asm\\test.vmasm"
-
 std::string get_file_contents(const char *file_path) {
     std::ifstream file(file_path);
     if (file.is_open()) {
@@ -25,12 +23,12 @@ std::string get_file_contents(const char *file_path) {
     }
 }
 
-void write_to_out_file(const program_t& program) {
+void write_to_out_file(const char* filepath, const program_t &program) {
     std::ofstream file;
-    file.open("../program.bin", std::ios_base::binary);
+    file.open(filepath, std::ios_base::binary);
     if (file.is_open()) {
         for (const uint8_t &byte : program) {
-            file.write((char*)&byte, sizeof(byte));
+            file.write((char *) &byte, sizeof(byte));
         }
     } else {
         std::cout << "Could not open output file" << std::endl;
@@ -38,8 +36,68 @@ void write_to_out_file(const program_t& program) {
     }
 }
 
-int main() {
-    std::string text = get_file_contents(FILE_PATH);
+void print_usage(std::ostream &stream, const std::string &program) {
+    stream << "USAGE: " << program << " <options> [filename]" << std::endl;
+    stream << "OPTIONS:" << std::endl;
+    stream << "    -h|--help                      Shows this message" << std::endl;
+    stream << "    -o|--output [filename]         Specifies the path and filename of the output file" << std::endl;
+}
+
+struct Options {
+    const char* in_filepath;
+    const char* out_filepath;
+};
+
+Options parse_command_line_arguments(int argc, const char **argv) {
+    std::string program_name = argv[0];
+
+    Options output {
+        .in_filepath = "",
+        .out_filepath = "out.bin"
+    };
+
+    uint8_t cla_i = 1;
+    while (cla_i < argc) {
+        if (argv[cla_i] == std::string("-h") || argv[cla_i] == std::string("--help")) {
+            print_usage(std::cout, program_name);
+            std::exit(0);
+        }
+        if (argv[cla_i] == std::string("-o") || argv[cla_i] == std::string("--output")) {
+            ++cla_i;
+            if (cla_i >= argc) {
+                std::cerr << "ERROR: --output argument expects filename" << std::endl;
+                print_usage(std::cerr, program_name);
+                std::exit(1);
+            }
+            output.out_filepath = argv[cla_i];
+            ++cla_i;
+            continue;
+        }
+
+        if(argv[cla_i][0] == '-') {
+            std::cerr << "ERROR: unknown option: " << argv[cla_i] << std::endl;
+            print_usage(std::cerr, program_name);
+            std::exit(1);
+        }
+
+        output.in_filepath = argv[cla_i];
+        ++cla_i;
+    }
+
+    if(*output.in_filepath == '\0') {
+        std::cerr << "ERROR: please provide a file to assemble" << std::endl;
+        print_usage(std::cerr, program_name);
+        std::exit(1);
+    }
+
+    return output;
+}
+
+int main(int argc, const char **argv) {
+
+    Options cla = parse_command_line_arguments(argc, argv);
+
+    std::string text = get_file_contents(cla.in_filepath);
 
     Tokenizer tokenizer(text);
     token_list_t tokens = tokenizer.tokenize();
@@ -56,5 +114,5 @@ int main() {
     }
     std::cout << std::endl;
 
-    write_to_out_file(program);
+    write_to_out_file(cla.out_filepath, program);
 }
