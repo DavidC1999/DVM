@@ -13,6 +13,14 @@
 #include "AssemblerBytes.h"
 #include "shared.h"
 
+#include "tokens/WordToken.h"
+#include "tokens/NumberToken.h"
+#include "tokens/RegisterToken.h"
+#include "tokens/InstructionToken.h"
+#include "tokens/LabelToken.h"
+#include "tokens/CommaToken.h"
+#include "Macro.h"
+
 
 class Assembler {
 

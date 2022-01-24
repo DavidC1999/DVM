@@ -1,4 +1,12 @@
-mov r0, 3
+@macro FOO:
+    3
+@end
+
+@macro CONSTANT:
+    mov r0, FOO
+@end
+
+CONSTANT
 push r0
 push 28
 pop r0

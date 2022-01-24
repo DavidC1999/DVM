@@ -13,6 +13,7 @@
 #include "tokens/InstructionToken.h"
 #include "tokens/LabelToken.h"
 #include "tokens/CommaToken.h"
+#include "Macro.h"
 
 class Tokenizer {
 
@@ -56,6 +57,10 @@ private:
     static std::string get_word(std::string::iterator& it);
     static std::string get_digits(std::string::iterator& it);
 
+    bool is_end_macro(std::string::iterator& it);
+    void define_macro(std::string::iterator& it);
+    void expand_macro(token_list_t::iterator macro_start, Macro &macro);
+
     static bool is_digit(char c);
     static bool is_alphanum(char c);
 
@@ -68,4 +73,6 @@ private:
     token_list_t m_tokens;
 
     int m_curr_line = 1;
+
+    std::unordered_map<std::string, Macro> m_macro_table {};
 };

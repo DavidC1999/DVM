@@ -3,7 +3,7 @@ set(SOURCES
     Tokenizer.cpp
     tokens/Token.cpp
     Assembler.cpp
-    ../general.cpp)
+    ../general.cpp Macro.h)
 
 list(TRANSFORM SOURCES PREPEND assembler/)
 

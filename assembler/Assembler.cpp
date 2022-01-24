@@ -4,12 +4,6 @@
 #include <stdexcept>
 #include <array>
 #include <iostream>
-#include "tokens/WordToken.h"
-#include "tokens/NumberToken.h"
-#include "tokens/RegisterToken.h"
-#include "tokens/InstructionToken.h"
-#include "tokens/LabelToken.h"
-#include "tokens/CommaToken.h"
 
 void Assembler::expect_more_tokens(const token_list_t::iterator &it, uint8_t amt) {
     token_list_t::iterator it_cpy = it;
@@ -49,7 +43,6 @@ program_t Assembler::assemble() {
     auto it = m_tokens.begin();
 
     while (it != m_tokens.end()) {
-
         switch ((*it)->get_type_id()) {
             case InstructionToken::TYPE_ID: {
                 parse_instruction(it);
@@ -65,7 +58,6 @@ program_t Assembler::assemble() {
                 ++it;
                 break;
             }
-
             default: {
                 std::stringstream error_msg;
                 error_msg << "Unexpected token: " << (**it);

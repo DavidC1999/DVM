@@ -56,20 +56,50 @@ push 1  ; stack[sp++] <- 1
 push r0 ; stack[sp++] <- r0
 pop  r0  ; r0 <- stack[--sp]
 
-;;;;;;;;;;;;;;;;;; Function calls (not implemented yet)
+;;;;;;;;;;;;;;;;;; Function calls (not implemented yet, maybe implement with macros?)
+; convention: r0 through r3 should not be modified by function calls
+
+; calling convention:
+; first arguments in r4, r5, r6, r7, r8, r9
+; remaining arguments pushed to stack
+; return value in r15
+
 ; --stuff--
 mov r0 1
 mov r1 2
-call func_add ; push next addr, unconditional jump
+call(func_add) ; push next addr to address stack, unconditional jump
 ; --stuff--
 func_add:
     add r0 r1
-    ret ; pop addr off stack; jump there
+    ret ; pop addr off address stack; jump there
 
-;;;;;;;;;;;;;;;;;; 'preprocessor' (not implemented yet)
-@include "my_file.vmasm"
+;;;;;;;;;;;;;;;;;; meta-processor (not implemented yet)
+; macros substitute tokens
+; Like in this case 3:
+@macro MY_CONSTANT:
+    3 ; the 3 is tokenized in the regular tokenization step, the identifier MY_CONSTANT is added to a separate symbol table
+@end
 
-@def MY_CONSTANT 3
-@macro add_three(register):
-    add %register MY_CONSTANT
+; Macros can receive arguments. Arguments are tokens. Allowed tokens for arguments:
+; - number tokens
+; - register tokens
+; - word token
+@macro add_three(reg):
+    add %reg MY_CONSTANT
+@end
+
+; Macros can receive multiple arguments separated by commas.
+@macro add_six(reg0, reg1):
+    add %reg0 @(MY_CONSTANT * 2) ; in-place calculation
+    add %reg1 @(MY_CONSTANT * 2) ; in-place calculation
+@end
+
+@macro call(func):
+    push @($ + 9)
+    jmp %func
+@end
+
+@macro ret:
+    pop r10
+    jmp r10
 @end
