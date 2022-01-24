@@ -4,6 +4,17 @@ The VM is a "von Neumann" (in airquotes for a reason) machine. With
 - 15 general-purpose registers
 - 64-bit stack
 
+# Flags
+Flags are updated by the `INSTR_CMP_IMM` and `INSTR_CMP_REG` instructions discussed later. They are used by the various jump instructions
+
+| **Flag** | **Description**       |
+|----------|-----------------------|
+| G        | Greater than          |
+| GE       | Greater than or equal |
+| L        | Less than             |
+| LE       | Less than or equal    |
+| E        | Equal                 |
+
 Each instruction is one byte, and is followed by its operands. The operands can be of varying length depending
 on its associated instruction. Current instructions:
 
