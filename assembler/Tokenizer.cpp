@@ -212,7 +212,7 @@ void Tokenizer::define_macro(std::string::iterator &it) {
     m_macro_table.insert(std::make_pair(name, Macro(name, std::move(body), m_curr_line)));
 }
 
-void Tokenizer::expand_macro(token_list_t::iterator macro_start, const Macro &macro) {
+void Tokenizer::expand_macro(token_list_t::iterator &macro_start, const Macro &macro) {
 
     // if expanding on word token, remove the word token first:
     if(macro_start != m_tokens.end()) {
@@ -241,7 +241,6 @@ void Tokenizer::expand_macro(token_list_t::iterator macro_start, const Macro &ma
             if(m_macro_table.find(word) != m_macro_table.end()) {
                 Macro submacro = std::move(m_macro_table.at(word));
                 expand_macro(curr_token, submacro);
-                ++curr_token;
                 continue;
             }
         }

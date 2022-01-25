@@ -53,7 +53,7 @@ private:
 
     bool is_end_macro(std::string::iterator& it);
     void define_macro(std::string::iterator& it);
-    void expand_macro(token_list_t::iterator macro_start, const Macro &macro);
+    void expand_macro(token_list_t::iterator &macro_start, const Macro &macro);
 
     static bool is_digit(char c);
     static bool is_alphanum(char c);

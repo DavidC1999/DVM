@@ -1,18 +1,13 @@
-@macro FOO:
+@macro BAR:
     3
 @end
 
 @macro CONSTANT:
-    mov r0, FOO
+    BAR
 @end
 
-CONSTANT
-push r0
-push 28
-pop r0
-pop r1
-/*
-r0 = 28
-r1 3
-push 32
-*/
+@macro FOO:
+    mov r0, BAR
+@end
+
+FOO
