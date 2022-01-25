@@ -1,11 +1,6 @@
 #include "Token.h"
 
-#include "WordToken.h"
-#include "NumberToken.h"
-#include "RegisterToken.h"
-#include "InstructionToken.h"
-#include "LabelToken.h"
-#include "CommaToken.h"
+#include "Tokens.h"
 #include "../Macro.h"
 
 std::ostream& operator<<(std::ostream& os, const Token& token) {

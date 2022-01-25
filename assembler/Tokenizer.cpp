@@ -101,13 +101,6 @@ token_list_t Tokenizer::tokenize() {
                 continue; // we're done here
             }
 
-            // check if it is a macro
-            if(m_macro_table.find(word) != m_macro_table.end()) {
-                Macro macro = std::move(m_macro_table.at(word));
-                expand_macro(m_tokens.end(), macro);
-                continue;
-            }
-
             // it is not an instruction, register, or a label so just add it as a word
             m_tokens.push_back(std::make_unique<WordToken>(word, m_curr_line));
 
@@ -124,6 +117,21 @@ token_list_t Tokenizer::tokenize() {
             std::stringstream error_msg;
             error_msg << "Unexpected character: " << *it << " (" << (int) (*it) << ")";
             panic(error_msg.str());
+        }
+    }
+
+    // check for macros
+
+    for(auto token_it = m_tokens.begin(); token_it != m_tokens.end(); ++token_it) {
+        if((*token_it)->get_type_id() != WordToken::TYPE_ID) continue;
+
+        const WordToken *word_token = (WordToken*)(token_it->get());
+        std::string word = word_token->get_word();
+
+        if(m_macro_table.find(word) != m_macro_table.end()) {
+            const Macro &macro = m_macro_table.at(word);
+            expand_macro(token_it, macro);
+            continue;
         }
     }
 
@@ -175,32 +183,6 @@ bool Tokenizer::is_end_macro(std::string::iterator &it) {
 void Tokenizer::define_macro(std::string::iterator &it) {
     std::string name = get_word(it);
 
-    // parse optional arguments:
-    // commented out because of complexity before meat of macros are implemeted.
-    // implement macro body first
-//    std::vector<std::string> args;
-//    if (*it == '(') {
-//        if (*(it + 1) != ')') { // if any arguments are given
-//            do {
-//                ++it;
-//                std::string word = get_word(it); // get argument name
-//                if (word.empty()) { // if no word was found, throw error
-//                    std::stringstream error_msg;
-//                    error_msg << "Unexpected character: " << *it;
-//                    panic(error_msg.str());
-//                }
-//                args.emplace_back(word); // if a word was found, add it to the argument list
-//            } while (*it == ','); // find next argument if there are more
-//
-//            if (*it != ')') {
-//                panic("Expected ')' at the end of a macro argument list");
-//            }
-//            ++it;
-//        } else {
-//            it += 2;
-//        }
-//    }
-
     if (*it != ':') {
         std::stringstream error_msg;
         error_msg << "Unexpected character: " << *it << " (" << (int) (*it) << ")";
@@ -215,8 +197,9 @@ void Tokenizer::define_macro(std::string::iterator &it) {
         acc << *it;
         ++it;
     }
+    std::string for_debug = acc.str();
 
-    Tokenizer macro_tokenizer(acc.str());
+    Tokenizer macro_tokenizer(for_debug);
     try {
         body = macro_tokenizer.tokenize();
     } catch (std::exception &e) {
@@ -229,7 +212,7 @@ void Tokenizer::define_macro(std::string::iterator &it) {
     m_macro_table.insert(std::make_pair(name, Macro(name, std::move(body), m_curr_line)));
 }
 
-void Tokenizer::expand_macro(token_list_t::iterator macro_start, Macro &macro) {
+void Tokenizer::expand_macro(token_list_t::iterator macro_start, const Macro &macro) {
 
     // if expanding on word token, remove the word token first:
     if(macro_start != m_tokens.end()) {
@@ -240,8 +223,8 @@ void Tokenizer::expand_macro(token_list_t::iterator macro_start, Macro &macro) {
         macro_start = m_tokens.erase(macro_start);
     }
 
-    // get the macro body, and insert it to the token list
-    token_list_t macro_body = std::move(macro.get_body());
+    // copy the macro body, and insert it to the token list
+    token_list_t macro_body = macro.copy_body();
     size_t macro_body_size = macro_body.size();
     m_tokens.splice(macro_start, macro_body);
     macro_start = std::prev(macro_start, (int)macro_body_size); // splice moves the iterator, move it back

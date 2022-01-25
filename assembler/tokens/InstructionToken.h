@@ -12,8 +12,10 @@ public:
     SET_DEBUG_NAME(INSTRUCTION)
 
     InstructionToken(AbstractInstruction instr, std::string& instr_name, uint64_t line) :
-        Token(TYPE_ID, line), m_instr(instr), m_instr_name(instr_name) {
+        Token(TYPE_ID, line), m_instr(instr), m_instr_name(instr_name) {}
 
+    std::unique_ptr<Token> clone() override {
+        return std::make_unique<InstructionToken>(m_instr, m_instr_name, m_line);
     }
 
     [[nodiscard]] AbstractInstruction get_instr() const {

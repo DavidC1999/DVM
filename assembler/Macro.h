@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "tokens/Tokens.h"
 
 class Macro {
 public:
@@ -30,6 +31,16 @@ public:
 
     [[nodiscard]] token_list_t &get_body() {
         return m_body;
+    }
+
+    [[nodiscard]] const token_list_t &get_body() const {
+        return m_body;
+    }
+
+    [[nodiscard]] token_list_t copy_body() const {
+        token_list_t out;
+        for(const auto &token : m_body) out.push_back(token->clone());
+        return out;
     }
 
     [[nodiscard]] uint64_t get_line() const {

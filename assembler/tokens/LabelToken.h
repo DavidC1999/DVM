@@ -12,8 +12,10 @@ public:
     SET_DEBUG_NAME(LABEL)
 
     LabelToken(std::string name, uint64_t line) :
-            Token(TYPE_ID, line), m_name(std::move(name)) {
+            Token(TYPE_ID, line), m_name(std::move(name)) {}
 
+    std::unique_ptr<Token> clone() override {
+        return std::make_unique<LabelToken>(m_name, m_line);
     }
 
     [[nodiscard]] const std::string &get_name() const {

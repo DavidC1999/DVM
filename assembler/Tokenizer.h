@@ -6,13 +6,7 @@
 
 #include "shared.h"
 
-#include "tokens/Token.h"
-#include "tokens/WordToken.h"
-#include "tokens/NumberToken.h"
-#include "tokens/RegisterToken.h"
-#include "tokens/InstructionToken.h"
-#include "tokens/LabelToken.h"
-#include "tokens/CommaToken.h"
+#include "tokens/Tokens.h"
 #include "Macro.h"
 
 class Tokenizer {
@@ -59,7 +53,7 @@ private:
 
     bool is_end_macro(std::string::iterator& it);
     void define_macro(std::string::iterator& it);
-    void expand_macro(token_list_t::iterator macro_start, Macro &macro);
+    void expand_macro(token_list_t::iterator macro_start, const Macro &macro);
 
     static bool is_digit(char c);
     static bool is_alphanum(char c);

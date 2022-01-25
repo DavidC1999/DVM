@@ -11,8 +11,10 @@ public:
     SET_DEBUG_NAME(NUMBER)
 
     NumberToken(uint64_t num, uint64_t line) :
-        Token(TYPE_ID, line), m_num(num) {
+        Token(TYPE_ID, line), m_num(num) {}
 
+    std::unique_ptr<Token> clone() override {
+        return std::make_unique<NumberToken>(m_num, m_line);
     }
 
     [[nodiscard]] uint64_t get_num() const {

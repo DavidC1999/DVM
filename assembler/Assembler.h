@@ -13,12 +13,7 @@
 #include "AssemblerBytes.h"
 #include "shared.h"
 
-#include "tokens/WordToken.h"
-#include "tokens/NumberToken.h"
-#include "tokens/RegisterToken.h"
-#include "tokens/InstructionToken.h"
-#include "tokens/LabelToken.h"
-#include "tokens/CommaToken.h"
+#include "tokens/Tokens.h"
 #include "Macro.h"
 
 
