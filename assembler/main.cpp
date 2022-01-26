@@ -5,6 +5,7 @@
 
 #include "Tokenizer.h"
 #include "Assembler.h"
+#include "ExpressionEvaluator.h"
 
 std::string get_file_contents(const char *file_path) {
     std::ifstream file(file_path);
@@ -94,6 +95,20 @@ Options parse_command_line_arguments(int argc, const char **argv) {
 }
 
 int main(int argc, const char **argv) {
+    // TESTING EXPRESSION EVALUATOR:
+    {
+        ExpressionEvaluator expression_evaluator;
+
+        std::string expr = "3 + 3";
+        expression_tokens_t tokens = expression_evaluator.tokenize(expr);
+
+        for (const auto &token : tokens) {
+            std::cout << "Token type: " << token.first << std::endl
+                      << "Value: " << token.second << std::endl;
+        }
+    }
+    //
+    std::exit(0);
 
     Options cla = parse_command_line_arguments(argc, argv);
 

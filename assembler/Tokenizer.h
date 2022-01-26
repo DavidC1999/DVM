@@ -57,8 +57,8 @@ private:
     void define_macro(const std::string &name, const std::string &body);
     void expand_macro(token_list_t::iterator &macro_start, const Macro &macro, uint32_t depth = 0);
 
-    static bool is_digit(char c);
-    static bool is_alphanum(char c);
+//    static bool is_digit(char c);
+//    static bool is_alphanum(char c);
 
     static std::string str_tolower(std::string s);
 

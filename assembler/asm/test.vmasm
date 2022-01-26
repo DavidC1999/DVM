@@ -1,4 +1,4 @@
-@def CONSTANT 3
+@def CONSTANT @{3 * (2 + 5)}
 
 @macro FOO:
     CONSTANT
