@@ -231,7 +231,7 @@ void Tokenizer::expand_macro(token_list_t::iterator &macro_start, const Macro &m
 
 
     // loop through the inserted tokens, and see if there are more macros to expand:
-    auto curr_token = macro_start;
+    auto &curr_token = macro_start; // make sure we update the given iterator by referencing it
     auto end_token = std::next(macro_start, (int)macro_body_size);
     while(curr_token != end_token) {
         if((**curr_token).get_type_id() == WordToken::TYPE_ID) {
@@ -239,7 +239,7 @@ void Tokenizer::expand_macro(token_list_t::iterator &macro_start, const Macro &m
             std::string word = word_token->get_word();
 
             if(m_macro_table.find(word) != m_macro_table.end()) {
-                Macro submacro = std::move(m_macro_table.at(word));
+                const Macro &submacro = m_macro_table.at(word);
                 expand_macro(curr_token, submacro);
                 continue;
             }
