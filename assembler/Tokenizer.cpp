@@ -105,13 +105,24 @@ token_list_t Tokenizer::tokenize() {
             m_tokens.push_back(std::make_unique<WordToken>(word, m_curr_line));
 
         } else if (*it == '@') {
+            // TODO: Macro error reporting gives the wrong line
             ++it;
             std::string word = get_word(it);
             if (word == "macro") {
                 if (*it != ' ')
                     panic("Expected space after \"@macro\"");
                 ++it; // consume space
-                define_macro(it);
+                parse_macro(it);
+            } else if(word == "def") {
+                if (*it != ' ')
+                    panic("Expected space after \"@def\"");
+                ++it; // consume space
+                std::string name = get_word(it);
+                if (*it != ' ')
+                    panic("Expected space after @def identifier");
+                ++it; // consume space
+                std::string body = get_until(it, '\n');
+                define_macro(name, body);
             }
         } else {
             std::stringstream error_msg;
@@ -162,6 +173,17 @@ std::string Tokenizer::get_digits(std::string::iterator &it) {
     return acc.str();
 }
 
+std::string Tokenizer::get_until(std::string::iterator& it, char c) {
+    std::stringstream acc;
+
+    while (*it != c) {
+        acc << *it;
+        ++it;
+    }
+
+    return acc.str();
+}
+
 
 // if not the end, does not modify the iterator
 // if it is the end, moves iterator past the end
@@ -180,7 +202,7 @@ bool Tokenizer::is_end_macro(std::string::iterator &it) {
     return true;
 }
 
-void Tokenizer::define_macro(std::string::iterator &it) {
+void Tokenizer::parse_macro(std::string::iterator &it) {
     std::string name = get_word(it);
 
     if (*it != ':') {
@@ -190,30 +212,35 @@ void Tokenizer::define_macro(std::string::iterator &it) {
     }
     ++it;
 
-    token_list_t body;
-
-    std::stringstream acc;
+    std::stringstream body;
     while (!is_end_macro(it)) {
-        acc << *it;
+        body << *it;
         ++it;
     }
-    std::string for_debug = acc.str();
 
-    Tokenizer macro_tokenizer(for_debug);
+    define_macro(name, body.str());
+}
+
+void Tokenizer::define_macro(const std::string &name, const std::string &body) {
+
+    token_list_t body_tokens;
+    Tokenizer macro_tokenizer(body);
     try {
-        body = macro_tokenizer.tokenize();
+        body_tokens = macro_tokenizer.tokenize();
     } catch (std::exception &e) {
         std::stringstream error_msg;
-        error_msg << "Error in macro body: " << std::endl;
+        error_msg << "Error in macro body for macro \"" << name << "\": " << std::endl;
         error_msg << "    " << e.what();
         panic(error_msg.str());
     }
 
-    m_macro_table.insert(std::make_pair(name, Macro(name, std::move(body), m_curr_line)));
+    m_macro_table.insert(std::make_pair(name, Macro(name, std::move(body_tokens), m_curr_line)));
 }
 
-void Tokenizer::expand_macro(token_list_t::iterator &macro_start, const Macro &macro) {
-
+void Tokenizer::expand_macro(token_list_t::iterator &macro_start, const Macro &macro, uint32_t depth) {
+    if(depth > 50) {
+        panic("Exceeded maximum macro expansion depth");
+    }
     // if expanding on word token, remove the word token first:
     if(macro_start != m_tokens.end()) {
         if((*macro_start)->get_type_id() != WordToken::TYPE_ID) {
@@ -240,7 +267,7 @@ void Tokenizer::expand_macro(token_list_t::iterator &macro_start, const Macro &m
 
             if(m_macro_table.find(word) != m_macro_table.end()) {
                 const Macro &submacro = m_macro_table.at(word);
-                expand_macro(curr_token, submacro);
+                expand_macro(curr_token, submacro, depth + 1);
                 continue;
             }
         }

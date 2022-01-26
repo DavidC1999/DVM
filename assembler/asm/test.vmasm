@@ -1,13 +1,11 @@
-@macro BAR:
-    3
-@end
-
-@macro CONSTANT:
-    BAR
-@end
+@def CONSTANT 3
 
 @macro FOO:
-    mov r0, BAR
+    CONSTANT
 @end
 
-FOO
+@macro BAR:
+    mov r0, FOO
+@end
+
+BAR
