@@ -262,3 +262,24 @@ Multi-line comments:
     AUTHOR: me
 */
 ```
+
+## Macros
+```asm
+@def CONSTANT 3
+
+@macro FOO:
+    CONSTANT
+@end
+
+@macro BAR:
+    mov r0, FOO
+@end
+
+BAR
+```
+
+will expand to
+
+```asm
+mov r0, 3 
+```

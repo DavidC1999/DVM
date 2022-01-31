@@ -13,6 +13,9 @@
 #include "AssemblerBytes.h"
 #include "shared.h"
 
+#include "tokens/Tokens.h"
+#include "Macro.h"
+
 
 class Assembler {
 

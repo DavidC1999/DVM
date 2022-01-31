@@ -14,9 +14,10 @@ public:
     WordToken(std::string& word, uint64_t line) :
         Token(TYPE_ID, line), m_word(word)
     {}
-    // WordToken(const char* word) :
-    //     Token(std::string(word))
-    // {}
+
+    std::unique_ptr<Token> clone() override {
+        return std::make_unique<WordToken>(m_word, m_line);
+    }
 
 
     [[nodiscard]] std::string get_word() const {

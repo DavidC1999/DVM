@@ -6,13 +6,8 @@
 
 #include "shared.h"
 
-#include "tokens/Token.h"
-#include "tokens/WordToken.h"
-#include "tokens/NumberToken.h"
-#include "tokens/RegisterToken.h"
-#include "tokens/InstructionToken.h"
-#include "tokens/LabelToken.h"
-#include "tokens/CommaToken.h"
+#include "tokens/Tokens.h"
+#include "Macro.h"
 
 class Tokenizer {
 
@@ -55,6 +50,12 @@ private:
 
     static std::string get_word(std::string::iterator& it);
     static std::string get_digits(std::string::iterator& it);
+    static std::string get_until(std::string::iterator& it, char c);
+
+    bool is_end_macro(std::string::iterator& it);
+    void parse_macro(std::string::iterator& it);
+    void define_macro(const std::string &name, const std::string &body);
+    void expand_macro(token_list_t::iterator &macro_start, const Macro &macro, uint32_t depth = 0);
 
     static bool is_digit(char c);
     static bool is_alphanum(char c);
@@ -68,4 +69,6 @@ private:
     token_list_t m_tokens;
 
     int m_curr_line = 1;
+
+    std::unordered_map<std::string, Macro> m_macro_table {};
 };

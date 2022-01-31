@@ -1,10 +1,11 @@
-mov r0, 3
-push r0
-push 28
-pop r0
-pop r1
-/*
-r0 = 28
-r1 3
-push 32
-*/
+@def CONSTANT 3
+
+@macro FOO:
+    CONSTANT
+@end
+
+@macro BAR:
+    mov r0, FOO
+@end
+
+BAR

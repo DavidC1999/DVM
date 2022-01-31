@@ -14,4 +14,8 @@ public:
     explicit CommaToken(uint64_t line) :
             Token(TYPE_ID, line) {
     }
+
+    std::unique_ptr<Token> clone() override {
+        return std::make_unique<CommaToken>(m_line);
+    }
 };
