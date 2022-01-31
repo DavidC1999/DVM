@@ -3,8 +3,7 @@ set(SOURCES
     Tokenizer.cpp
     tokens/Token.cpp
     Assembler.cpp
-    ../general.cpp
-    ExpressionEvaluator.cpp)
+    ../general.cpp)
 
 list(TRANSFORM SOURCES PREPEND assembler/)
 

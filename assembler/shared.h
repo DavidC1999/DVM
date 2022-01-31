@@ -32,11 +32,3 @@ enum AbstractInstruction {
     ABSTR_INSTR_PUSH,
     ABSTR_INSTR_POP,
 };
-
-inline bool is_alphanum(char c) {
-    return (c >= 'A' && c <= 'z') || (c >= '0' && c <= '9');
-}
-
-inline bool is_digit(char c) {
-    return c >= '0' && c <= '9';
-}

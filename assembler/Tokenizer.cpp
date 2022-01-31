@@ -6,6 +6,15 @@
 #include <memory>
 #include <regex>
 
+bool Tokenizer::is_alphanum(char c) {
+    return (c >= 'A' && c <= 'z') || (c >= '0' && c <= '9');
+}
+
+bool Tokenizer::is_digit(char c) {
+    return c >= '0' && c <= '9';
+}
+
+
 std::string Tokenizer::str_tolower(std::string s) {
     std::transform(s.begin(), s.end(), s.begin(),
                    [](unsigned char c) { return std::tolower(c); });
